@@ -3,8 +3,8 @@ import { func, shape } from 'prop-types';
 
 import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
-import RadioInput from '@hyva/react-checkout/components/common/Form/RadioInput';
-import useStripeAppContext from '../hooks/useStripeAppContext';
+import RadioInput from '../../../../components/common/Form/RadioInput';
+import useAppContext from '../hooks/useStripeAppContext';
 import Form from './Cards/Form';
 import { paymentMethodShape } from '../utility';
 import restGetClientSecret from '../api/stripe/getClientSecret';

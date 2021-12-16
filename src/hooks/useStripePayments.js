@@ -1,9 +1,9 @@
 import { useCallback } from 'react';
-import { LOGIN_FORM, PAYMENT_METHOD_FORM } from '@hyva/react-checkout/config';
-import { _isObjEmpty, _keys } from '@hyva/react-checkout/utils';
-import { __ } from '@hyva/react-checkout/i18n';
 import _get from 'lodash.get';
 import _set from 'lodash.set';
+import { _isObjEmpty, _keys } from '../../../../utils';
+import { __ } from '../../../../i18n';
+import { LOGIN_FORM, PAYMENT_METHOD_FORM } from '../../../../config';
 import restRefreshPaymentIntent from '../api/stripe/refreshPaymentIntent';
 import useStripeCartContext from './useStripeCartContext';
 import useStripeAppContext from './useStripeAppContext';
