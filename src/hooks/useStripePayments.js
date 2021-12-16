@@ -11,7 +11,7 @@ import useStripeAppContext from './useStripeAppContext';
 export default function useStripePayments() {
   const { cartId, setOrderInfo, setRestPaymentMethod } = useStripeCartContext();
 
-  const { dispatch, isLoggedIn, setErrorMessage, checkoutAgreements } =
+  const { appDispatch, isLoggedIn, setErrorMessage, checkoutAgreements } =
     useStripeAppContext();
 
   const placeOrder = useCallback(
@@ -68,7 +68,7 @@ export default function useStripePayments() {
   const confirmPayment = useCallback(
     async (stripe, elements) => {
       try {
-        await restRefreshPaymentIntent(dispatch);
+        await restRefreshPaymentIntent(appDispatch);
         const result = await stripe.confirmPayment({
           elements,
           redirect: 'if_required',
@@ -92,7 +92,7 @@ export default function useStripePayments() {
       }
       return {};
     },
-    [setErrorMessage, restRefreshPaymentIntent, dispatch]
+    [setErrorMessage, restRefreshPaymentIntent, appDispatch]
   );
 
   return {

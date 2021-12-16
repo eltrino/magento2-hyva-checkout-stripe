@@ -14,12 +14,12 @@ const stripePromise = loadStripe(config.apiKey, { locale: config.locale });
 
 function Cards({ method, selected, actions }) {
   const [secret, setSecret] = useState(null);
-  const { dispatch } = useStripeAppContext();
+  const { appDispatch } = useStripeAppContext();
 
   const isSelected = method.code === selected.code;
 
   const getSecret = async () => {
-    const result = await restGetClientSecret(dispatch, {});
+    const result = await restGetClientSecret(appDispatch, {});
     setSecret(JSON.parse(result));
   };
 
