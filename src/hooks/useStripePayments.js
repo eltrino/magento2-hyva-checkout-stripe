@@ -5,14 +5,14 @@ import { __ } from '@hyva/react-checkout/i18n';
 import _get from 'lodash.get';
 import _set from 'lodash.set';
 import restRefreshPaymentIntent from '../api/stripe/refreshPaymentIntent';
-import useCartContext from './useCartContext';
-import useAppContext from './useAppContext';
+import useStripeCartContext from './useStripeCartContext';
+import useStripeAppContext from './useStripeAppContext';
 
 export default function useStripePayments() {
-  const { cartId, setOrderInfo, setRestPaymentMethod } = useCartContext();
+  const { cartId, setOrderInfo, setRestPaymentMethod } = useStripeCartContext();
 
   const { dispatch, isLoggedIn, setErrorMessage, checkoutAgreements } =
-    useAppContext();
+    useStripeAppContext();
 
   const placeOrder = useCallback(
     async (values, additionalData) => {
@@ -55,7 +55,14 @@ export default function useStripePayments() {
       }
       return false;
     },
-    [cartId, setOrderInfo, isLoggedIn, setErrorMessage, setRestPaymentMethod]
+    [
+      cartId,
+      setOrderInfo,
+      isLoggedIn,
+      setErrorMessage,
+      setRestPaymentMethod,
+      checkoutAgreements,
+    ]
   );
 
   const confirmPayment = useCallback(

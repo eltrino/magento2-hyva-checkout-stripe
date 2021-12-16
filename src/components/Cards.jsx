@@ -4,7 +4,7 @@ import { func, shape } from 'prop-types';
 import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
 import RadioInput from '@hyva/react-checkout/components/common/Form/RadioInput';
-import useAppContext from '../hooks/useAppContext';
+import useStripeAppContext from '../hooks/useStripeAppContext';
 import Form from './Cards/Form';
 import { paymentMethodShape } from '../utility';
 import restGetClientSecret from '../api/stripe/getClientSecret';
@@ -14,7 +14,7 @@ const stripePromise = loadStripe(config.apiKey, { locale: config.locale });
 
 function Cards({ method, selected, actions }) {
   const [secret, setSecret] = useState(null);
-  const { dispatch } = useAppContext();
+  const { dispatch } = useStripeAppContext();
 
   const isSelected = method.code === selected.code;
 
@@ -25,7 +25,7 @@ function Cards({ method, selected, actions }) {
 
   useEffect(() => {
     getSecret();
-  }, []);
+  }, [getSecret]);
 
   const options = {
     clientSecret: secret,

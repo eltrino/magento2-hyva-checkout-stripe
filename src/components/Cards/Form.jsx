@@ -6,11 +6,11 @@ import {
   useStripe,
 } from '@stripe/react-stripe-js';
 
-import useCheckoutFormContext from '../../hooks/useCheckoutFormContext';
+import useStripeCheckoutFormContext from '../../hooks/useStripeCheckoutFormContext';
 import useStripePayments from '../../hooks/useStripePayments';
 
 function Form() {
-  const { registerPaymentAction } = useCheckoutFormContext();
+  const { registerPaymentAction } = useStripeCheckoutFormContext();
   const { placeOrder, confirmPayment } = useStripePayments();
 
   const stripe = useStripe();

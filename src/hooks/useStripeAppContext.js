@@ -2,7 +2,7 @@ import { useContext } from 'react';
 
 import AppContext from '@hyva/react-checkout/context/App/AppContext';
 
-export default function useAppContext() {
+export default function useStripeAppContext() {
   const [
     { isLoggedIn, checkoutAgreements },
     { setPageLoader, setErrorMessage, dispatch },
