@@ -1,7 +1,7 @@
 import { useContext } from 'react';
 import _get from 'lodash.get';
 
-import CartContext from '@hyva/react-checkout/context/Cart/CartContext';
+import CartContext from '../../../../context/Cart/CartContext';
 
 export default function useCartContext() {
   const [cartData, { setRestPaymentMethod, setOrderInfo }] =
