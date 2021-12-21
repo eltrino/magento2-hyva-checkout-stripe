@@ -2,16 +2,16 @@ import { useContext } from 'react';
 
 import AppContext from '../../../../context/App/AppContext';
 
-export default function useAppContext() {
+export default function useStripeAppContext() {
   const [
     { isLoggedIn, checkoutAgreements },
-    { setPageLoader, setErrorMessage, dispatch },
+    { setPageLoader, setErrorMessage, dispatch: appDispatch },
   ] = useContext(AppContext);
 
   return {
     setPageLoader,
     setErrorMessage,
-    dispatch,
+    appDispatch,
     checkoutAgreements,
     isLoggedIn,
   };
