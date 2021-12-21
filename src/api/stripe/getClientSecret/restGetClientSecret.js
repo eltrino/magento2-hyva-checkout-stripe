@@ -1,5 +1,7 @@
-import sendRequest, { RESPONSE_TEXT } from '../../../../../../api/sendRequest';
-import RootElement from '../../../../../../utils/rootElement';
+import RootElement from '@hyva/react-checkout/utils/rootElement';
+import sendRequest, {
+  RESPONSE_TEXT,
+} from '@hyva/react-checkout/api/sendRequest';
 
 import modifier from './modifier';
 

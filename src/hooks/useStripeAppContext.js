@@ -1,6 +1,6 @@
 import { useContext } from 'react';
 
-import AppContext from '../../../../context/App/AppContext';
+import AppContext from '@hyva/react-checkout/context/App/AppContext';
 
 export default function useStripeAppContext() {
   const [
