@@ -14,43 +14,37 @@ const stripePromise = loadStripe(config.apiKey, { locale: config.locale });
 
 function Cards({ method, selected, actions }) {
   const [secret, setSecret] = useState(null);
+  const isSelected = method.code === selected.code;
   const { appDispatch } = useStripeAppContext();
 
-  const isSelected = method.code === selected.code;
-
-  const getSecret = async () => {
-    const result = await restGetClientSecret(appDispatch, {});
-    setSecret(JSON.parse(result));
-  };
+  const radioInputTag = (
+    <RadioInput
+      value={method.code}
+      label={method.title}
+      name="paymentMethod"
+      checked={isSelected}
+      onChange={actions.change}
+    />
+  );
 
   useEffect(() => {
-    getSecret();
-  }, [getSecret]);
+    restGetClientSecret(appDispatch, {}).then((res) => {
+      setSecret(res);
+    });
+  }, []);
 
-  const options = {
-    clientSecret: secret,
-  };
+  if (isSelected) {
+    const options = { clientSecret: secret };
 
-  const elementsTag = (
-    <Elements stripe={stripePromise} options={options}>
-      <Form />
-    </Elements>
-  );
+    const elementsTag = (
+      <Elements stripe={stripePromise} options={options} key={secret}>
+        <Form />
+      </Elements>
+    );
 
-  return (
-    secret && (
-      <>
-        <RadioInput
-          value={method.code}
-          label={method.title}
-          name="paymentMethod"
-          checked={isSelected}
-          onChange={actions.change}
-        />
-        {isSelected && elementsTag}
-      </>
-    )
-  );
+    return [radioInputTag, elementsTag];
+  }
+  return radioInputTag;
 }
 
 Cards.propTypes = {
