@@ -12,6 +12,6 @@ export default function restGetClientSecret(result) {
       )
     );
   }
-
-  return result;
+  const secret = JSON.parse(result);
+  return secret;
 }
