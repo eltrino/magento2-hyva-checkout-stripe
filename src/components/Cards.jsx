@@ -33,7 +33,7 @@ function Cards({ method, selected, actions }) {
     });
   }, []);
 
-  if (isSelected) {
+  if (isSelected && secret) {
     const options = { clientSecret: secret };
 
     const elementsTag = (
