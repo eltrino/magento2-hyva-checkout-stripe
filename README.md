@@ -3,7 +3,7 @@
 ## Prerequisites
 
 1. A working Magento site with [Stripe](https://stripe.com/docs/plugins/magento-2/install) module installed and configured.
-2. [Hyvä Checkout](https://github.com/hyva-themes/magento2-hyva-checkout) is installed and configured.
+2. [Hyvä React Checkout](https://github.com/hyva-themes/magento2-react-checkout) is installed and configured.
 
 ## How to use it with Hyvä Checkout?
 
@@ -35,5 +35,5 @@
 6. Run `NODE_ENV=production npm run build` inside react application.
 
 ## More Info
-1. https://hyva-themes.github.io/magento2-hyva-checkout/customize/
-2. https://hyva-themes.github.io/magento2-hyva-checkout/payment-integration/
+1. https://hyva-themes.github.io/magento2-react-checkout/customize/
+2. https://hyva-themes.github.io/magento2-react-checkout/payment-integration/
