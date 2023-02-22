@@ -92,7 +92,7 @@ export default function useStripePayments() {
       }
       return {};
     },
-    [setErrorMessage, restRefreshPaymentIntent, appDispatch]
+    [setErrorMessage, appDispatch]
   );
 
   return {
