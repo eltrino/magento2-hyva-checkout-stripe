@@ -31,7 +31,7 @@ function Cards({ method, selected, actions }) {
     restGetClientSecret(appDispatch, {}).then((res) => {
       setSecret(res);
     });
-  }, []);
+  }, [appDispatch]);
 
   if (isSelected && secret) {
     const options = { clientSecret: secret };
