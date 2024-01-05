@@ -80,6 +80,8 @@ export default function useStripePayments() {
           const pm = _get(result, 'paymentIntent.payment_method');
           return {
             cc_stripejs_token: `${pm}:cart:xxxx`,
+            payment_element: true,
+            payment_method: pm,
           };
         }
       } catch (e) {
