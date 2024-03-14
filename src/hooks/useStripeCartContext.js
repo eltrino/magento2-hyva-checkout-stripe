@@ -6,10 +6,10 @@ import CartContext from '@hyva/react-checkout/context/Cart/CartContext';
 export default function useStripeCartContext() {
   const [cartData, { setRestPaymentMethod, setOrderInfo }] =
     useContext(CartContext);
-  const cartId = _get(cartData, 'cart.id');
-
   return {
-    cartId,
+    cartId: _get(cartData, 'cart.id'),
+    customerFullName: _get(cartData, 'cart.billing_address.fullName'),
+    customerEmail: _get(cartData, 'cart.email'),
     setOrderInfo,
     setRestPaymentMethod,
   };

@@ -4,14 +4,19 @@ import { _isObjEmpty, _keys } from '@hyva/react-checkout/utils';
 import { __ } from '@hyva/react-checkout/i18n';
 import _get from 'lodash.get';
 import _set from 'lodash.set';
-import restRefreshPaymentIntent from '../api/stripe/refreshPaymentIntent';
 import useStripeCartContext from './useStripeCartContext';
 import useStripeAppContext from './useStripeAppContext';
 
 export default function useStripePayments() {
-  const { cartId, setOrderInfo, setRestPaymentMethod } = useStripeCartContext();
+  const {
+    cartId,
+    customerEmail,
+    customerFullName,
+    setOrderInfo,
+    setRestPaymentMethod,
+  } = useStripeCartContext();
 
-  const { appDispatch, isLoggedIn, setErrorMessage, checkoutAgreements } =
+  const { isLoggedIn, setErrorMessage, checkoutAgreements } =
     useStripeAppContext();
 
   const placeOrder = useCallback(
@@ -19,7 +24,7 @@ export default function useStripePayments() {
       const extensionAttributes = {};
 
       const paymentMethodCode = _get(values, `${PAYMENT_METHOD_FORM}.code`);
-      const email = _get(values, `${LOGIN_FORM}.email`);
+      const email = _get(values, `${LOGIN_FORM}.email`, customerEmail);
       const paymentMethodData = {
         cartId,
         email,
@@ -56,30 +61,41 @@ export default function useStripePayments() {
       return false;
     },
     [
+      customerEmail,
       cartId,
-      setOrderInfo,
-      isLoggedIn,
-      setErrorMessage,
-      setRestPaymentMethod,
       checkoutAgreements,
+      setRestPaymentMethod,
+      isLoggedIn,
+      setOrderInfo,
+      setErrorMessage,
     ]
   );
 
-  const confirmPayment = useCallback(
+  const createPayment = useCallback(
     async (stripe, elements) => {
       try {
-        await restRefreshPaymentIntent(appDispatch);
-        const result = await stripe.confirmPayment({
+        // Trigger form validation and wallet collection
+        const { error: submitError } = await elements.submit();
+        if (submitError) {
+          setErrorMessage(submitError);
+          return false;
+        }
+
+        const result = await stripe.createPaymentMethod({
           elements,
-          redirect: 'if_required',
+          params: {
+            billing_details: {
+              name: customerFullName,
+              email: customerEmail,
+            },
+          },
         });
 
         if (result.error) {
           setErrorMessage(result.error.message);
         } else {
-          const pm = _get(result, 'paymentIntent.payment_method');
+          const pm = _get(result, 'paymentMethod.id');
           return {
-            cc_stripejs_token: `${pm}:cart:xxxx`,
             payment_element: true,
             payment_method: pm,
           };
@@ -88,17 +104,17 @@ export default function useStripePayments() {
         console.error(e);
         setErrorMessage(
           __(
-            'This transaction could not be confirmed. Please select another payment method.'
+            'This transaction could not be initiated. Please select another payment method.'
           )
         );
       }
-      return {};
+      return false;
     },
-    [setErrorMessage, appDispatch]
+    [setErrorMessage, customerEmail, customerFullName]
   );
 
   return {
-    confirmPayment,
+    createPayment,
     placeOrder,
   };
 }

@@ -1,21 +1,17 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { func, shape } from 'prop-types';
 
 import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
 import RadioInput from '@hyva/react-checkout/components/common/Form/RadioInput';
-import useStripeAppContext from '../hooks/useStripeAppContext';
 import Form from './Cards/Form';
 import { paymentMethodShape } from '../utility';
-import restGetClientSecret from '../api/stripe/getClientSecret';
 import config from './config';
 
 const stripePromise = loadStripe(config.apiKey, { locale: config.locale });
 
 function Cards({ method, selected, actions }) {
-  const [secret, setSecret] = useState(null);
   const isSelected = method.code === selected.code;
-  const { appDispatch } = useStripeAppContext();
 
   const radioInputTag = (
     <RadioInput
@@ -27,17 +23,15 @@ function Cards({ method, selected, actions }) {
     />
   );
 
-  useEffect(() => {
-    restGetClientSecret(appDispatch, {}).then((res) => {
-      setSecret(res);
-    });
-  }, [appDispatch]);
-
-  if (isSelected && secret) {
-    const options = { clientSecret: secret };
-
+  if (isSelected) {
+    const options = {
+      mode: 'payment',
+      amount: null,
+      currency: 'USD',
+      paymentMethodCreation: 'manual',
+    };
     const elementsTag = (
-      <Elements stripe={stripePromise} options={options} key={secret}>
+      <Elements stripe={stripePromise} options={options}>
         <Form />
       </Elements>
     );
