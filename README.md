@@ -7,8 +7,7 @@
 
 ## How to use it with Hyvä Checkout?
 
-1. Install [additional module](https://github.com/eltrino/magento2-stripe-payments) which adds extra API resources to the Magento.
-2. Add payment method repository to package.json inside react application folder. Follow only one of the following steps (a or b). 
+1. Add payment method repository to package.json inside react application folder. Follow only one of the following steps (a or b). 
  
    a. if you've used [Hyvä CheckoutExample Module Template](https://github.com/hyva-themes/magento2-checkout-example) for customizations
 
@@ -30,9 +29,9 @@
        },
        ```
 
-4. Install additional dependencies `npm i @stripe/react-stripe-js@^1.6 @stripe/stripe-js@^1.21` to react application.
-5. Run `npm install` inside react application.
-6. Run `NODE_ENV=production npm run build` inside react application.
+2. Install additional dependencies `npm i @stripe/react-stripe-js@^2.6.0 @stripe/stripe-js@^3.0.8` to react application.
+3. Run `npm install` inside react application.
+4. Run `NODE_ENV=production npm run build` inside react application.
 
 ## More Info
 1. https://hyva-themes.github.io/magento2-react-checkout/customize/
