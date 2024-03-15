@@ -27,7 +27,7 @@ function Cards({ method, selected, actions }) {
     const options = {
       mode: 'payment',
       amount: null,
-      currency: 'USD',
+      currency: 'usd',
       paymentMethodCreation: 'manual',
     };
     const elementsTag = (
