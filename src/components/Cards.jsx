@@ -7,11 +7,13 @@ import RadioInput from '../../../../components/common/Form/RadioInput';
 import Form from './Cards/Form';
 import { paymentMethodShape } from '../utility';
 import config from './config';
+import useStripeCartContext from '../hooks/useStripeCartContext';
 
 const stripePromise = loadStripe(config.apiKey, { locale: config.locale });
 
 function Cards({ method, selected, actions }) {
   const isSelected = method.code === selected.code;
+  const { cartAmount } = useStripeCartContext();
 
   const radioInputTag = (
     <RadioInput
@@ -24,10 +26,11 @@ function Cards({ method, selected, actions }) {
   );
 
   if (isSelected) {
+    // does not matter what currency used here, it will be overwritten eventually by the backend
     const options = {
       mode: 'payment',
-      amount: null,
-      currency: 'usd',
+      amount: Math.floor(cartAmount * 100),
+      currency: 'eur',
       paymentMethodCreation: 'manual',
     };
     const elementsTag = (

@@ -1,120 +1,91 @@
 import { useCallback } from 'react';
-import _get from 'lodash.get';
-import _set from 'lodash.set';
-import { _isObjEmpty, _keys } from '../../../../utils';
 import { __ } from '../../../../i18n';
-import { LOGIN_FORM, PAYMENT_METHOD_FORM } from '../../../../config';
+import _get from 'lodash.get';
+import { useElements, useStripe } from '@stripe/react-stripe-js';
 import useStripeCartContext from './useStripeCartContext';
 import useStripeAppContext from './useStripeAppContext';
+import { setPaymentMethodRequest, placeOrderRequest } from '../api';
 
 export default function useStripePayments() {
-  const {
-    cartId,
-    customerEmail,
-    customerFullName,
-    setOrderInfo,
-    setRestPaymentMethod,
-  } = useStripeCartContext();
+  const { customerEmail, customerFullName, setOrderInfo } =
+    useStripeCartContext();
 
-  const { isLoggedIn, setErrorMessage, checkoutAgreements } =
-    useStripeAppContext();
+  const { setErrorMessage, appDispatch, setPageLoader } = useStripeAppContext();
 
-  const placeOrder = useCallback(
-    async (values, additionalData) => {
-      const extensionAttributes = {};
+  const stripe = useStripe();
+  const elements = useElements();
 
-      const paymentMethodCode = _get(values, `${PAYMENT_METHOD_FORM}.code`);
-      const email = _get(values, `${LOGIN_FORM}.email`, customerEmail);
-      const paymentMethodData = {
-        cartId,
-        email,
-        paymentMethod: {
-          method: paymentMethodCode,
-          additional_data: additionalData,
-        },
-      };
+  const placeOrder = useCallback(async () => {
+    try {
+      setPageLoader(true);
 
-      if (
-        !_isObjEmpty(extensionAttributes) ||
-        !_isObjEmpty(checkoutAgreements)
-      ) {
-        _set(paymentMethodData, 'paymentMethod.extension_attributes', {
-          ...extensionAttributes,
-          agreement_ids: _keys(checkoutAgreements),
-        });
+      const { error: submitError } = await elements.submit();
+      if (submitError) {
+        setErrorMessage(submitError);
+        return false;
       }
-      try {
-        const order = await setRestPaymentMethod(paymentMethodData, isLoggedIn);
 
-        if (order) {
-          setOrderInfo(order);
-        }
-        return order;
-      } catch (e) {
-        console.error(e);
-        setErrorMessage(
-          __(
-            'This transaction could not be performed. Please select another payment method.'
-          )
-        );
-      }
-      return false;
-    },
-    [
-      customerEmail,
-      cartId,
-      checkoutAgreements,
-      setRestPaymentMethod,
-      isLoggedIn,
-      setOrderInfo,
-      setErrorMessage,
-    ]
-  );
-
-  const createPayment = useCallback(
-    async (stripe, elements) => {
-      try {
-        // Trigger form validation and wallet collection
-        const { error: submitError } = await elements.submit();
-        if (submitError) {
-          setErrorMessage(submitError);
-          return false;
-        }
-
-        const result = await stripe.createPaymentMethod({
-          elements,
-          params: {
-            billing_details: {
-              name: customerFullName,
-              email: customerEmail,
-            },
+      const paymentMethodResult = await stripe.createPaymentMethod({
+        elements,
+        params: {
+          billing_details: {
+            name: customerFullName,
+            email: customerEmail,
           },
-        });
+        },
+      });
 
-        if (result.error) {
-          setErrorMessage(result.error.message);
-        } else {
-          const pm = _get(result, 'paymentMethod.id');
-          return {
-            payment_element: true,
-            payment_method: pm,
-          };
-        }
-      } catch (e) {
-        console.error(e);
+      if (paymentMethodResult.error) {
+        setErrorMessage(paymentMethodResult.error.message);
+      }
+      const pmId = _get(paymentMethodResult, 'paymentMethod.id', false);
+
+      if (pmId === false) {
+        return false;
+      }
+
+      await setPaymentMethodRequest(appDispatch, pmId);
+      const order = await placeOrderRequest(appDispatch);
+
+      const nextActionResult = await stripe.handleNextAction({
+        clientSecret: order.client_secret,
+      });
+      if (nextActionResult.error) {
+        console.error(nextActionResult.error);
         setErrorMessage(
           __(
-            'This transaction could not be initiated. Please select another payment method.'
+            'This transaction could not be finalized. Please select another payment method.'
           )
         );
       }
-      return false;
-    },
-    [setErrorMessage, customerEmail, customerFullName]
-  );
+
+      if (order) {
+        setOrderInfo(order);
+      }
+      return order;
+    } catch (e) {
+      console.error(e);
+      setErrorMessage(
+        __(
+          'This transaction could not be performed. Please select another payment method.'
+        )
+      );
+    } finally {
+      setPageLoader(false);
+    }
+    return false;
+  }, [
+    setPageLoader,
+    elements,
+    stripe,
+    customerFullName,
+    customerEmail,
+    appDispatch,
+    setErrorMessage,
+    setOrderInfo,
+  ]);
 
   return {
-    createPayment,
     placeOrder,
   };
 }

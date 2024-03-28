@@ -1,16 +1,13 @@
-import { useContext } from 'react';
 import _get from 'lodash.get';
-
-import CartContext from '../../../../context/Cart/CartContext';
+import useCartContext from '../../../../hook/useCartContext';
 
 export default function useStripeCartContext() {
-  const [cartData, { setRestPaymentMethod, setOrderInfo }] =
-    useContext(CartContext);
+  const { cart, setOrderInfo } = useCartContext();
   return {
-    cartId: _get(cartData, 'cart.id'),
-    customerFullName: _get(cartData, 'cart.billing_address.fullName'),
-    customerEmail: _get(cartData, 'cart.email'),
+    cartId: _get(cart, 'id'),
+    customerFullName: _get(cart, 'billing_address.fullName'),
+    customerEmail: _get(cart, 'email'),
+    cartAmount: _get(cart, 'prices.grandTotalAmount'),
     setOrderInfo,
-    setRestPaymentMethod,
   };
 }
