@@ -47,16 +47,21 @@ export default function useStripePayments() {
       await setPaymentMethodRequest(appDispatch, pmId);
       const order = await placeOrderRequest(appDispatch);
 
-      const nextActionResult = await stripe.handleNextAction({
-        clientSecret: order.client_secret,
-      });
-      if (nextActionResult.error) {
-        console.error(nextActionResult.error);
-        setErrorMessage(
-          __(
-            'This transaction could not be finalized. Please select another payment method.'
-          )
-        );
+      const { paymentIntent } = await stripe.retrievePaymentIntent(
+        order.client_secret
+      );
+      if (paymentIntent.next_action) {
+        const nextActionResult = await stripe.handleNextAction({
+          clientSecret: order.client_secret,
+        });
+        if (nextActionResult.error) {
+          console.error(nextActionResult.error);
+          setErrorMessage(
+            __(
+              'This transaction could not be finalized. Please select another payment method.'
+            )
+          );
+        }
       }
 
       if (order) {
