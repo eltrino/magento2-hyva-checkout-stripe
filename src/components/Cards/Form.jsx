@@ -1,35 +1,19 @@
 import React, { useCallback, useEffect } from 'react';
 
-import {
-  PaymentElement,
-  useElements,
-  useStripe,
-} from '@stripe/react-stripe-js';
+import { PaymentElement } from '@stripe/react-stripe-js';
 
 import useStripeCheckoutFormContext from '../../hooks/useStripeCheckoutFormContext';
 import useStripePayments from '../../hooks/useStripePayments';
 
 function Form() {
   const { registerPaymentAction } = useStripeCheckoutFormContext();
-  const { placeOrder, createPayment } = useStripePayments();
+  const { placeOrder } = useStripePayments();
 
-  const stripe = useStripe();
-  const elements = useElements();
-
-  // custom "place order" submit action
   const paymentSubmitHandler = useCallback(
-    async (values) => {
-      const additionalData = await createPayment(stripe, elements);
-      if (additionalData === false) {
-        return false;
-      }
-      const order = await placeOrder(values, additionalData);
-      return order;
-    },
-    [stripe, elements, placeOrder, createPayment]
+    async () => placeOrder(),
+    [placeOrder]
   );
 
-  // registering custom "place order" action for the payment method
   useEffect(() => {
     registerPaymentAction('stripe_payments', paymentSubmitHandler);
   }, [registerPaymentAction, paymentSubmitHandler]);
